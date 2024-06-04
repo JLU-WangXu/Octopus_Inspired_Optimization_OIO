@@ -47,12 +47,10 @@ class Tentacles:
 
             Record_write.write(str(controller.best_value_all-real_min_value)+',')
             for i in range(self.swarm_size):
-                # 更新粒子速度
                 r1 = np.random.rand(self.dim)
                 r2 = np.random.rand(self.dim)
                 velocity[i] = self.w * velocity[i] + self.c1 * r1 * (p_best_pos[i] - swarm[i]) + self.c2 * r2 * (self.g_best_pos - swarm[i])
 
-                # 更新粒子位置
                 swarm[i] += velocity[i]
                 # 边界处理
                 swarm[i] = np.clip(swarm[i], self.bounds[0], self.bounds[1])
@@ -111,7 +109,7 @@ class TentaclesControl:
             c2 =1.8
             w = 0.6#随范围改；章鱼数量；
 
-            center = np.random.uniform(min_range, max_range, self.dim)#####初始位置太限制了，要随函数变
+            center = np.random.uniform(min_range, max_range, self.dim)
 
             radius = np.random.uniform(1.0, 3.0)*10**int(math.log(max_range,10))
             #radius = (max_range-min_range)*np.random.uniform(0.03,0.05)
