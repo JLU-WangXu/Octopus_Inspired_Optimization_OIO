@@ -27,7 +27,6 @@ class Tentacles:
         self.g_best_val = np.inf
 
     def optimize(self):
-        # 初始化粒子位置和速度
         swarm = np.random.uniform(self.bounds[0], self.bounds[1], (self.swarm_size, self.dim))
         swarm = np.clip(swarm, min_range, max_range)  ########初始化也要限制
         velocity = np.random.uniform(min_range * 0.001, max_range * 0.001, (self.swarm_size, self.dim))
@@ -40,13 +39,11 @@ class Tentacles:
         for t in range(self.max_iter):
 
             for i in range(self.swarm_size):
-                # 更新粒子速度
                 r1 = np.random.rand(self.dim)
                 r2 = np.random.rand(self.dim)
                 velocity[i] = self.w * velocity[i] + self.c1 * r1 * (p_best_pos[i] - swarm[i]) + self.c2 * r2 * (
                             self.g_best_pos - swarm[i])
 
-                # 更新粒子位置
                 swarm[i] += velocity[i]
                 # 边界处理
                 swarm[i] = np.clip(swarm[i], self.bounds[0], self.bounds[1])
@@ -186,7 +183,6 @@ class Octopus:
 
             if swarm_size < 12 or max_iter < 20:
                 self.reborn_flag[i] = 1
-                # print(i,"因为边角料重生了")
 
             elif i > 0:
                 for j in range(i):
@@ -194,18 +190,15 @@ class Octopus:
                     distance -= self.radius_list[j]
 
                     if distance < radius:
-                        # print("第",i,j,"重了")
                         if self.best_values[i] > self.best_values[j] and self.reborn_flag[i] == 0:
                             self.reborn_flag[i] = 1
                             center = np.random.uniform(min_range, max_range, self.dim)
-                        # print(i,"更大","第",i,"个触手变了")
 
                         elif self.reborn_flag[j] == 0:
 
                             temp_swarm_size, temp_max_iter, c1, c2, w, temp_center, temp_radius = self.params_list[j]
                             self.reborn_flag[j] = 1
                             temp_center = np.random.uniform(min_range, max_range, self.dim)
-                            # print(j,"更大","第", j, "个触手变了")
                             for k in range(self.dim):
                                 if np.random.randn() < 0.5:
                                     temp_center[k] = np.random.uniform(min_range, self.global_best_position[
@@ -215,7 +208,6 @@ class Octopus:
                                         self.global_best_position[k] + total_range * 0.08, max_range)
                                 self.params_list[j] = (
                                 20, 40, c1, c2, w, temp_center, total_range * np.random.uniform(0.06, 0.08))
-                        # print("第",j,"个触手碰撞重生了")
 
             self.radius_list[i] = radius
             self.center_list[i] = center
