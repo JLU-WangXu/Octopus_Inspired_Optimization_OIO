@@ -25,7 +25,6 @@ class Tentacles:
         self.g_best_val = np.inf
 
     def optimize(self):
-        # 初始化粒子位置和速度
         swarm = np.random.uniform(self.bounds[0], self.bounds[1], (self.swarm_size, self.dim))
         swarm = np.clip(swarm, min_range, max_range)
         velocity = np.random.uniform(min_range*0.001,max_range*0.001,(self.swarm_size, self.dim))
@@ -38,12 +37,10 @@ class Tentacles:
         for t in range(self.max_iter):
 
             for i in range(self.swarm_size):
-                # 更新粒子速度
                 r1 = np.random.rand(self.dim)
                 r2 = np.random.rand(self.dim)
                 velocity[i] = self.w * velocity[i] + self.c1 * r1 * (p_best_pos[i] - swarm[i]) + self.c2 * r2 * (self.g_best_pos - swarm[i])
 
-                # 更新粒子位置
                 swarm[i] += velocity[i]
                 # 边界处理
                 swarm[i] = np.clip(swarm[i], self.bounds[0], self.bounds[1])
