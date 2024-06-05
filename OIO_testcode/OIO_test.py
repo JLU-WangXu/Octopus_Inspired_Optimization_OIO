@@ -107,7 +107,7 @@ class TentaclesControl:
             max_iter = 200
             c1 =1.8
             c2 =1.8
-            w = 0.6#随范围改；章鱼数量；
+            w = 0.6
 
             center = np.random.uniform(min_range, max_range, self.dim)
 
@@ -225,7 +225,6 @@ class Controller:
         for j in range(self.num_iteration):
 
             for i in range(self.num_control):
-                print("#############################第", i, "只章鱼##############################")
                 octopus = i
                 self.TentaclesControls[i].run_tentacle()
 
@@ -358,25 +357,14 @@ if __name__ == "__main__":
 
 #################################
 
-    #for i in range(num_control):
-        #for j in range(5):#5是触手数
-            #ImuDataTxt_tentacles.write(str("octopus")+str(i)+",")
-    #ImuDataTxt_tentacles.write('\n')
+
     Found = 0
 
     octopus = 0#
     tentacles = 0#
     num_ex = 1
-    COUNT = 0#
-    '''
-    for i in range(num_ex):
-        begintime = time.time()
-        controller = Controller(num_control, num_iteration, rastrigin, dim)# 运行所有Tentacles优化算法
-        controller.run_psocontrol()
-        end = time.time()
-        print(end-begintime)
-        Found = 0
-    '''
+    COUNT = 0
+
     max_range = 0
     min_range = 0
     real_min_value = 0
@@ -398,7 +386,6 @@ if __name__ == "__main__":
         for j in range(num_ex):
             Record_write.write('\n')
             # 创建TentaclesControl对象
-            #print("第",j,"次")
             COUNT=j
             Found = 0
             begin_time = time.time()
@@ -433,11 +420,4 @@ if __name__ == "__main__":
     time_std = np.std(time_consume)
     print(fitness[0,0]-real_min_value, fit_std, time_mean, time_std)
 
-    # 输出全局最优解和最优值
-    #print("章鱼个数:", num_control)
-    #print("每条章鱼触手个数:", controller.num_tentacle)
-    #print("全局最优值:", controller.best_value_all)
-    #print("全局最优位置:", controller.best_position_all)
 
-
-#1群体4章鱼40触手，群体迭代5次，，一触手50吸盘迭代200次： 5*200 = 1000
