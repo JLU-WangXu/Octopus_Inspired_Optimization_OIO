@@ -27,11 +27,11 @@ Yuhua Dong: Data curation, Investigation, Visualization, Writing – original dr
 
 Jia Deng: Investigation, Resources, Validation, Writing – original draft: Writing – review & editing. 
 
-Long i Xu: Data curation, Software, Validation, Visualization, Writing – original draft: Writing – review & editing. 
+Longji Xu: Data curation, Software, Validation, Visualization, Writing – original draft: Writing – review & editing. 
 
 Xiang Li: Resources, Software, Validation, Visualization, Writing – original draft. 
 
-Rui  e: Validation, Visualization, Writing – original draft: Writing – review & editing. 
+Rui He: Validation, Visualization, Writing – original draft: Writing – review & editing. 
 
 
 
