@@ -133,7 +133,7 @@ class TentaclesControl:
             max_iter = 200 #min = 20,max=400
             c1 =1.8
             c2 =1.8
-            w = 0.6#随范围改；章鱼数量；
+            w = 0.6
 
             center = np.random.uniform(min_range + i*step, min_range+(i+1)*step, self.dim)#####
             #center = np.random.uniform(min_range, max_range, self.dim)
@@ -577,8 +577,7 @@ if __name__ == "__main__":
         Count_i = i
         for j in range(num_ex):
 
-            # 创建TentaclesControl对象
-            #print("第",j,"次")
+
             COUNT=j
             Found = 0
             begin_time = time.time()
@@ -586,7 +585,6 @@ if __name__ == "__main__":
             min_range = min_range_list[i]
             real_min_value = real_min_value_list[i]
 
-           # print(str(cost_fun[i]), max_range, min_range, real_min_value)
             controller = Controller(num_control, num_iteration, cost_fun[i], dim)
             # 运行所有Tentacles优化算法
             controller.run_tentaclecontrol()
@@ -634,12 +632,5 @@ if __name__ == "__main__":
     df = pd.DataFrame(fitness_record_array)
     file_path = r'/OAshoulian.csv'
     df.to_csv(file_path, index=False)
-    # 输出全局最优解和最优值
-    #print("章鱼个数:", num_control)
-    #print("每条章鱼触手个数:", controller.num_tentacle)
-    #print("全局最优值:", controller.best_value_all)
-    #print("全局最优位置:", controller.best_position_all)
-
-
 
 
