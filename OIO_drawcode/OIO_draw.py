@@ -37,7 +37,7 @@ class Tentacles:
     def optimize(self):
         global Found,max_range,min_range,real_min_value,diedai_count,controller
         global row,column,fitness_record_array,num_ex,COUNT,Count_i,position_record_arr,particle_count,iter_count
-        global END,num_iteration#判断是不是整个函数最后一次运行
+        global END, num_iteration#
 
         swarm = np.random.uniform(self.bounds[0], self.bounds[1], (self.swarm_size, self.dim))
         swarm = np.clip(swarm, min_range, max_range)
@@ -210,8 +210,8 @@ class TentaclesControl:
         for i, params in enumerate(self.params_list):
 
             if best_value_iteration != worst_value_iteration:
-                self.best_values_ratio[i] = (self.best_values[i] - worst_value_iteration) / ( best_value_iteration - worst_value_iteration)  # 归一化（0,1）
-                self.best_values_ratio[i] = self.best_values_ratio[i] * (1.6 - 0.4) + 0.4  # 投影到（0.2,1.1）
+                self.best_values_ratio[i] = (self.best_values[i] - worst_value_iteration) / ( best_value_iteration - worst_value_iteration)  # 归一化
+                self.best_values_ratio[i] = self.best_values_ratio[i] * (1.6 - 0.4) + 0.4  
 
 
             swarm_size, max_iter, c1, c2, w, center, radius = params
@@ -349,7 +349,7 @@ def plot_contour(cost_fun, position_record_arr, max_range, min_range, tentacle_a
     contours = plt.contourf(X, Y, Z, levels=levels, cmap=plt.cm.jet,zorder=1)
     plt.colorbar(label='Z Value')
 
-    # 添加触手和正方形
+
     for i in range(tentacle_arr.shape[0]):
         #square = plt.Rectangle((tentacle_arr[i, 0] - radius_arr[i], tentacle_arr[i, 1] - radius_arr[i]),
                              # width=2 * radius_arr[i], height=2 * radius_arr[i], angle=0, color=square_color,
@@ -513,7 +513,7 @@ if __name__ == "__main__":
 #################################
 
     #for i in range(num_control):
-        #for j in range(5):#5是触手数
+        #for j in range(5):
             #ImuDataTxt_tentacles.write(str("octopus")+str(i)+",")
     #ImuDataTxt_tentacles.write('\n')
     Found = 0
@@ -643,5 +643,3 @@ if __name__ == "__main__":
 
 
 
-#群体迭代5次，4章鱼，一章鱼5触手，一触手50吸盘迭代200次。总共5*200*20 = 20000次，粒子数为4*5*50 = 1000个
-#
