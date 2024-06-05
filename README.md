@@ -20,7 +20,7 @@ In performance evaluations, including comparisons with existing mainstream intel
 ![image](https://github.com/JLU-WangXu/Octopus_Inspired_Optimization_OIO/assets/73222849/b8aa2311-e4a0-472d-bc9b-b3e486e48afd)
 ![image](https://github.com/JLU-WangXu/Octopus_Inspired_Optimization_OIO/assets/73222849/bc13cd51-294f-4448-827d-c3653ff84d37)
 
-Author Contributions 
+# Author Contributions 
 Xu Wang: Conceptualization, Investigation, Project administration, Supervision, Writing – original draft: Writing – review & editing. 
 
 Yuhua Dong: Data curation, Investigation, Visualization, Writing – original draft: Writing – review & editing. 
