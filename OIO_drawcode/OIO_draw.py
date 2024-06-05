@@ -5,6 +5,10 @@ import time
 from functools import reduce
 import pandas as pd
 import matplotlib.pyplot as plt
+
+
+
+
 path1 = r"/OAAccuracy.csv"
 ImuDataTxt_OCT= open(path1,"w")
 #计算任意维度欧氏距离
@@ -48,7 +52,7 @@ class Tentacles:
         for t in range(self.max_iter):
 
             if COUNT == num_ex - 1 and t == self.max_iter - 1 and iter_count == num_iteration - 1:
-                print("↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓")
+
             for i in range(self.swarm_size):
 
                 r1 = np.random.rand(self.dim)
@@ -62,9 +66,6 @@ class Tentacles:
                 #print(iter_count ,num_iteration-1)
                 if COUNT == num_ex-1 and t == self.max_iter-1 and iter_count == num_iteration-1 :
                     position_record_arr[particle_count,Count_i,:] = swarm[i]
-                    #print( position_record_arr[particle_count,Count_i,:])
-                   # print("Swarm:",swarm[i])
-                   # print("Posi",position_record_arr[particle_count, Count_i, :])
                     particle_count+=1
                     END = 1
 
@@ -178,16 +179,13 @@ class TentaclesControl:
                 self.best_values[i] = best_value
                 self.best_positions[i] = best_position
 
-           # print(i)
-            if END == 1:
 
+            if END == 1:
                 print("第",octopus, i, "个触手位置", tentacle.center, "半径", tentacle.radius,"size",tentacle.swarm_size)
-                print("↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑")
                 tentacle_arr[i+(octopus*num_tentacles), Count_i,:] = tentacle.center
                 radius_arr[i+(octopus*num_tentacles),Count_i] = tentacle.radius
                 Swarm_list.append(tentacle.swarm_size)
-                #print(radius_arr[i,Count_i])
-                  #self.best_values[i])
+
 
             # 更新全局最优解和最优值
             if self.best_values[i] < self.global_best_value:
@@ -197,7 +195,7 @@ class TentaclesControl:
                 print('\n')
                 break
         process_end = time.time()
-        #print("本章鱼最优值：",self.global_best_value,"目前耗时：",process_end-process_begin)
+
 
     #根据运行结果，群体信息进行调整
     def adjust_tentacle(self,paradise):
@@ -267,9 +265,6 @@ class TentaclesControl:
 
 
 
-        #print(self.best_values_ratio)
-
-
 #章鱼群
 process_begin = time.time()
 process_end = 0
@@ -328,8 +323,6 @@ class Controller:
 
 
 
-import matplotlib.pyplot as plt
-import numpy as np
 
 def plot_contour(cost_fun, position_record_arr, max_range, min_range, tentacle_arr, radius_arr, x_target,y_target,particle_color=None,
                  tentacle_color=None, square_color=None):
@@ -361,8 +354,7 @@ def plot_contour(cost_fun, position_record_arr, max_range, min_range, tentacle_a
         #square = plt.Rectangle((tentacle_arr[i, 0] - radius_arr[i], tentacle_arr[i, 1] - radius_arr[i]),
                              # width=2 * radius_arr[i], height=2 * radius_arr[i], angle=0, color=square_color,
                               # fill=True, alpha=0.7, zorder=1)
-        #square.set_edgecolor('blue')  # 设置边框颜色为黑色
-        #square.set_linewidth(3)  # 设置边框宽度
+
         #plt.gca().add_artist(square)
         fill_square = plt.Rectangle((tentacle_arr[i, 0] - radius_arr[i], tentacle_arr[i, 1] - radius_arr[i]),
                                     width=2 * radius_arr[i], height=2 * radius_arr[i], angle=0, color=square_color,
@@ -397,6 +389,10 @@ def plot_contour(cost_fun, position_record_arr, max_range, min_range, tentacle_a
     plt.savefig(f"{save_path}\\plot_{i}_{cost_fun.__name__}.png")  # 指定路径和文件名保存图像
     #plt.show()
     plt.close()  # 关闭当前图
+
+
+
+
 if __name__ == "__main__":
     def rastrigin(x):#rastrigin (-5.12,5.12)
         A = 10
