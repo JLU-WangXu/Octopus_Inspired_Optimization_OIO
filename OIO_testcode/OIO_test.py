@@ -8,14 +8,14 @@ ImuDataTxt_OCT= open(path1,"w")
 path_record = r"/home/wangxu/octopus/lixiang/10d/accuracy_try/output/OAshoulian.csv"
 Record_write = open(path_record,"w")
 
-#计算任意维度欧氏距离
+#Calculate Euclidean distance in any dimension
 
 def euclidean_distance(point1, point2):
     return math.sqrt(sum([(x2 - x1) ** 2 for x1, x2 in zip(point1, point2)]))
 
 Found = 0
 
-#触手
+#tentacle
 class Tentacles:
     def __init__(self, cost_func, dim, swarm_size=50, max_iter=100, c1=2.0, c2=2.0, w=0.7, center=np.zeros(2), radius=5.0):
         self.cost_func = cost_func
@@ -51,16 +51,16 @@ class Tentacles:
                 velocity[i] = self.w * velocity[i] + self.c1 * r1 * (p_best_pos[i] - swarm[i]) + self.c2 * r2 * (self.g_best_pos - swarm[i])
 
                 swarm[i] += velocity[i]
-                # 边界处理
+                # Boundary treatment
                 swarm[i] = np.clip(swarm[i], self.bounds[0], self.bounds[1])
                 swarm[i] = np.clip(swarm[i], min_range, max_range)
 
-                # 更新个体最优
+                # Update individual optimal
                 if self.cost_func(swarm[i]) < p_best_val[i]:
                     p_best_val[i] = self.cost_func(swarm[i])
                     p_best_pos[i] = swarm[i].copy()
 
-                    # 更新全局最优
+                    # Update global optimum
                     if p_best_val[i] < self.g_best_val:
                         self.g_best_val = p_best_val[i]
 
@@ -78,16 +78,16 @@ class Tentacles:
         return self.g_best_pos, self.g_best_val
 
 
-#章鱼
+#octopus
 class TentaclesControl:
     def __init__(self, num_tentacle, cost_func, dim):
-        #初始化
+        #initialization
         self.num_tentacle = num_tentacle
         self.cost_func = cost_func
         self.dim = dim
-        #Tentacles参数矩阵，为触手结构的实例
+        #Parameter matrix, an example of tentacle structure
         self.params_list = self.generate_random_params()
-        #结果参数
+        #Result parameters
         self.best_values = np.zeros(num_tentacle)
         self.best_values_ratio = np.ones(num_tentacle)
         self.best_positions = np.zeros((num_tentacle, dim))
@@ -95,7 +95,7 @@ class TentaclesControl:
         self.global_best_position = None
 
 
-    #触手的初始化，添加，减少
+    #Initialization, addition, and reduction of tentacles
     def generate_random_params(self):
         global max_range, min_range
         params_list = []
@@ -130,34 +130,34 @@ class TentaclesControl:
         del self.params_list[n]
 
 
-    #根据参数运行，统计结果
+    #Run according to the parameters and calculate the results
     def run_tentacle(self):
         global Found,tentacles,process_end,process_begin
         for i, params in enumerate(self.params_list):
             tentacles =i
             #print(octopus, tentacles)
             swarm_size, max_iter, c1, c2, w, center, radius = params
-            # 创建一个Tentacles对象
+            # Create a Tent object
             tentacle = Tentacles(self.cost_func, self.dim, swarm_size, max_iter, c1, c2, w, center, radius)
 
-            # 运行Tentacles优化算法
+            # Run Tentacles optimization algorithm
             best_position, best_value = tentacle.optimize()
-            print("第", i, "个触手位置", tentacle.g_best_pos,"size:",tentacle.swarm_size, "迭代次数",tentacle.max_iter,"找到的值", tentacle.g_best_val)
-            # 记录每个Tentacles的最优解和最优值
+            print("The", i, "-th tentacle position", tentacle.g_best_pos,"size:",tentacle.swarm_size, "iterations",tentacle.max_iter,"Found value", tentacle.g_best_val)
+            # Record the optimal solution and value for each Tentacles
             self.best_values[i] = best_value
             self.best_positions[i] = best_position
 
 
-            # 更新全局最优解和最优值
+            # Update the global optimal solution and optimal value
             if best_value < self.global_best_value:
                 self.global_best_value = best_value
                 self.global_best_position = best_position
             if Found == 1:
                 break
         process_end = time.time()
-        print("本章鱼最优值：",self.global_best_value,"目前耗时：",process_end-process_begin)
+        print("The optimal value of this octopus：",self.global_best_value,"Currently time-consuming：",process_end-process_begin)
 
-    #根据运行结果，群体信息进行调整
+    #Adjust group information based on operational results
     def adjust_tentacle(self,paradise):
         global max_range
         best_value_iteration = min(self.best_values)
@@ -168,8 +168,8 @@ class TentaclesControl:
 
             if best_value_iteration != worst_value_iteration:
                 self.best_values_ratio[i] = (self.best_values[i] - worst_value_iteration) / (
-                            best_value_iteration - worst_value_iteration)  # 归一化（0,1）
-                self.best_values_ratio[i] = self.best_values_ratio[i] * (1.3 - 0.7) + 0.7  # 投影到（0.7,1.3）
+                            best_value_iteration - worst_value_iteration)  # normalization（0,1）
+                self.best_values_ratio[i] = self.best_values_ratio[i] * (1.3 - 0.7) + 0.7  # Projection onto（0.7,1.3）
 
 
             swarm_size, max_iter, c1, c2, w, center, radius = params
@@ -186,20 +186,20 @@ class TentaclesControl:
                 self.params_list[i] = (10, 3, c1, c2, w, center,5)
 
 
-#章鱼群
+#octopus group
 process_begin = time.time()
 process_end = 0
 class Controller:
     def __init__(self, num_control, num_iteration, cost_func, dim):
-        #初始化
+        #initialization
         self.num_control = num_control
         self.num_iteration = num_iteration
         self.cost_func = cost_func
         self.dim = dim
-        #tentaclecontrol的实例
+        #Example of tentaclecontrol
         self.num_tentacle = np.random.randint(10,11,self.num_control)
         #self.search_range = search_range
-        #结果参数
+        #Result parameters
         self.best_value_all = np.inf
         self.best_position_all = None
         self.TentaclesControls = self.generate_tentaclecontrol()
@@ -214,7 +214,7 @@ class Controller:
     def add_tentaclecontrol(self,num_tentacle):
         self.TentaclesControls.append(TentaclesControl(num_tentacle, self.cost_func, self.dim))
 
-    #删除第n个章鱼
+    #Delete the n-th octopus
     def remove_tentaclecontrol(self,n):
         del self.TentaclesControls[n]
 
@@ -384,7 +384,7 @@ if __name__ == "__main__":
         Record_write.write('\n')
         for j in range(num_ex):
             Record_write.write('\n')
-            # 创建TentaclesControl对象
+            # Create TentaclesControl object
             COUNT=j
             Found = 0
             begin_time = time.time()
@@ -394,11 +394,11 @@ if __name__ == "__main__":
 
 
             controller = Controller(num_control, num_iteration, cost_fun[i], dim)
-            # 运行所有Tentacles优化算法
+            # Run all Tentacles optimization algorithms
             controller.run_tentaclecontrol()
             end_time = time.time()
             time_cost = end_time - begin_time
-            print("###################第", i, j, "次", "time:", time_cost, "s", )
+            print("###################The", i, j, "-th time", "time:", time_cost, "s", )
             print(str(cost_fun[i]), max_range, min_range, real_min_value)
             fitness[j, i] = controller.best_value_all-real_min_value
             time_consume[j, i] = time_cost

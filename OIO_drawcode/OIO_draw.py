@@ -11,14 +11,14 @@ import matplotlib.pyplot as plt
 
 path1 = r"/OAAccuracy.csv"
 ImuDataTxt_OCT= open(path1,"w")
-#计算任意维度欧氏距离
+#Calculate Euclidean distance in any dimension
 
 def euclidean_distance(point1, point2):
     return math.sqrt(sum([(x2 - x1) ** 2 for x1, x2 in zip(point1, point2)]))
 
 Found = 0
 
-#触手
+#tentacle
 class Tentacles:
     def __init__(self, cost_func, dim, swarm_size=50, max_iter=100, c1=2.0, c2=2.0, w=0.7, center=np.zeros(2), radius=5.0):
         self.cost_func = cost_func
@@ -69,12 +69,12 @@ class Tentacles:
                     particle_count+=1
                     END = 1
 
-                # 更新个体最优
+                # Update individual optimal
                 if self.cost_func(swarm[i]) < p_best_val[i]:
                     p_best_val[i] = self.cost_func(swarm[i])
                     p_best_pos[i] = swarm[i].copy()
 
-                    # 更新全局最优
+                    # Update global optimum
                     if p_best_val[i] < self.g_best_val:
                         self.g_best_val = p_best_val[i]
 
@@ -101,13 +101,13 @@ class Tentacles:
 #章鱼
 class TentaclesControl:
     def __init__(self, num_tentacle, cost_func, dim):
-        #初始化
+        #initialization
         self.num_tentacle = num_tentacle
         self.cost_func = cost_func
         self.dim = dim
-        #Tentacles参数矩阵，为触手结构的实例
+        #Tentacles parameter matrix, an example of tentacle structure
         self.params_list = self.generate_random_params()
-        #结果参数
+        #Result parameters
         self.best_values = [float('inf')] * num_tentacle
         self.best_values_ratio = np.ones(num_tentacle)
 
@@ -115,12 +115,12 @@ class TentaclesControl:
 
         self.global_best_value = np.inf
         self.global_best_position = None
-        #调整新位置
+        #Adjust to a new location
         self.center_list = np.zeros((num_tentacle, dim))
         self.radius_list = np.zeros(num_tentacle)
         self.reborn_flag = np.zeros(num_tentacle)
 
-    #触手的初始化，添加，减少
+    #Initialization, addition, and reduction of tentacles
     def generate_random_params(self):
         global max_range, min_range
         params_list = []
@@ -157,37 +157,37 @@ class TentaclesControl:
         del self.params_list[n]
 
 
-    #根据参数运行，统计结果
+    #Run according to the parameters and calculate the results
     def run_tentacle(self):
         global Found,tentacles,process_end,process_begin,END,tentacle_arr,Count_i,tentacle_count,radius_arr,octopus,num_tentacles
         for i, params in enumerate(self.params_list):
             tentacles =i
             #print(octopus, tentacles)
             swarm_size, max_iter, c1, c2, w, center, radius = params
-            # 创建一个Tentacles对象
+            # Create a Tent object
             tentacle = Tentacles(self.cost_func, self.dim, swarm_size, max_iter, c1, c2, w, center, radius)
 
-            # 运行Tentacles优化算法
+            # Run Tentacles optimization algorithm
             best_position, best_value = tentacle.optimize()
 
             if self.reborn_flag[i] == 1:
                 self.best_values[i] = best_value
                 self.best_positions[i] = best_position
                 self.reborn_flag[i] = 0
-                # 记录每个Tentacles的最优解和最优值
+                # Record the optimal solution and value for each Tentacles
             elif best_value < self.best_values[i]:
                 self.best_values[i] = best_value
                 self.best_positions[i] = best_position
 
 
             if END == 1:
-                print("第",octopus, i, "个触手位置", tentacle.center, "半径", tentacle.radius,"size",tentacle.swarm_size)
+                print("The",octopus, i, "-th tentacle position", tentacle.center, "radius", tentacle.radius,"size",tentacle.swarm_size)
                 tentacle_arr[i+(octopus*num_tentacles), Count_i,:] = tentacle.center
                 radius_arr[i+(octopus*num_tentacles),Count_i] = tentacle.radius
                 Swarm_list.append(tentacle.swarm_size)
 
 
-            # 更新全局最优解和最优值
+            # Update the global optimal solution and optimal value
             if self.best_values[i] < self.global_best_value:
                 self.global_best_value = self.best_values[i]
                 self.global_best_position = self.best_positions[i]
@@ -197,7 +197,7 @@ class TentaclesControl:
         process_end = time.time()
 
 
-    #根据运行结果，群体信息进行调整
+    # Adjust group information based on operational results
     def adjust_tentacle(self,paradise):
 
         global max_range,min_range,COUNT
@@ -210,7 +210,7 @@ class TentaclesControl:
         for i, params in enumerate(self.params_list):
 
             if best_value_iteration != worst_value_iteration:
-                self.best_values_ratio[i] = (self.best_values[i] - worst_value_iteration) / ( best_value_iteration - worst_value_iteration)  # 归一化
+                self.best_values_ratio[i] = (self.best_values[i] - worst_value_iteration) / ( best_value_iteration - worst_value_iteration)  # normalization
                 self.best_values_ratio[i] = self.best_values_ratio[i] * (1.6 - 0.4) + 0.4  
 
 
@@ -265,7 +265,7 @@ class TentaclesControl:
 
 
 
-#章鱼群
+#octopus group
 process_begin = time.time()
 process_end = 0
 class Controller:
@@ -276,10 +276,10 @@ class Controller:
         self.num_iteration = num_iteration
         self.cost_func = cost_func
         self.dim = dim
-        #tentaclecontrol的实例
+        #Example of tentaclecontrol
         self.num_tentacle = np.random.randint(num_tentacles,num_tentacles+1,self.num_control)
         #self.search_range = search_range
-        #结果参数
+        #Result parameters
         self.best_value_all = np.inf
         self.best_position_all = None
         self.TentaclesControls = self.generate_tentaclecontrol()
@@ -294,7 +294,7 @@ class Controller:
     def add_tentaclecontrol(self,num_tentacle):
         self.TentaclesControls.append(TentaclesControl(num_tentacle, self.cost_func, self.dim))
 
-    #删除第n个章鱼
+    #Delete the nth octopus
     def remove_tentaclecontrol(self,n):
         del self.TentaclesControls[n]
 
@@ -304,7 +304,7 @@ class Controller:
         for j in range(self.num_iteration):
 
             for i in range(self.num_control):
-               # print("#############################第", i, "只章鱼##############################")
+               # print("#############################The", i, "-th octopus##############################")
                 octopus = i
                 self.TentaclesControls[i].run_tentacle()
 
@@ -384,11 +384,11 @@ def plot_contour(cost_fun, position_record_arr, max_range, min_range, tentacle_a
     plt.ylabel('Y')
     plt.title('Contour Plot of ' + cost_fun.__name__)
 
-    # 保存图像为文件
+    # Save image as file
     save_path = r"/plot"
-    plt.savefig(f"{save_path}\\plot_{i}_{cost_fun.__name__}.png")  # 指定路径和文件名保存图像
+    plt.savefig(f"{save_path}\\plot_{i}_{cost_fun.__name__}.png")  # Specify the path and file name to save the image
     #plt.show()
-    plt.close()  # 关闭当前图
+    plt.close()  # Close the current image
 
 
 
@@ -590,7 +590,7 @@ if __name__ == "__main__":
             controller.run_tentaclecontrol()
             end_time = time.time()
             time_cost = end_time - begin_time
-            print("###################第", i, j, "次", "time:", time_cost, "s","best_value:",controller.best_value_all,"functionName:", str(cost_fun[i]))
+            print("###################The", i, j, "-th time", "time:", time_cost, "s","best_value:",controller.best_value_all,"functionName:", str(cost_fun[i]))
 
             fitness[j, i] = controller.best_value_all-real_min_value
             diedai_count = 0

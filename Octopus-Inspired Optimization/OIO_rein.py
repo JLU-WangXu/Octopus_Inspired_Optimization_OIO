@@ -3,13 +3,13 @@ import numpy as np
 import math
 
 
-# 计算任意维度欧氏距离
+# Calculate Euclidean distance in any dimension
 
 def euclidean_distance(point1, point2):
     return math.sqrt(sum([(x2 - x1) ** 2 for x1, x2 in zip(point1, point2)]))
 
 
-# 触手
+# tentacle
 class Tentacles:
     def __init__(self, cost_func, dim, swarm_size=50, max_iter=100, c1=2.0, c2=2.0, w=0.7, center=np.zeros(2),
                  radius=5.0):
@@ -28,7 +28,7 @@ class Tentacles:
 
     def optimize(self):
         swarm = np.random.uniform(self.bounds[0], self.bounds[1], (self.swarm_size, self.dim))
-        swarm = np.clip(swarm, min_range, max_range)  ########初始化也要限制
+        swarm = np.clip(swarm, min_range, max_range)  ########Initialization should also be restricted
         velocity = np.random.uniform(min_range * 0.001, max_range * 0.001, (self.swarm_size, self.dim))
         p_best_pos = swarm.copy()
         p_best_val = np.array([self.cost_func(p) for p in swarm])
@@ -45,16 +45,16 @@ class Tentacles:
                             self.g_best_pos - swarm[i])
 
                 swarm[i] += velocity[i]
-                # 边界处理
+                # Boundary treatment
                 swarm[i] = np.clip(swarm[i], self.bounds[0], self.bounds[1])
                 swarm[i] = np.clip(swarm[i], min_range, max_range)
 
-                # 更新个体最优
+                # Update individual optimal
                 if self.cost_func(swarm[i]) < p_best_val[i]:
                     p_best_val[i] = self.cost_func(swarm[i])
                     p_best_pos[i] = swarm[i].copy()
 
-                    # 更新全局最优
+                    # Update global optimum
                     if p_best_val[i] < self.g_best_val:
                         self.g_best_val = p_best_val[i]
 
@@ -63,16 +63,16 @@ class Tentacles:
         return self.g_best_pos, self.g_best_val
 
 
-# 章鱼
+# octopus
 class Octopus:
     def __init__(self, num_tentacles, cost_func, dim):
-        # 初始化
+        # initialization
         self.num_tentacles = num_tentacles
         self.cost_func = cost_func
         self.dim = dim
-        # 参数矩阵，为触手结构的实例
+        # Parameter matrix, an example of tentacle structure
         self.params_list = self.generate_tentacles()
-        # 结果参数
+        # Result parameters
         self.best_values = [float('inf')] * num_tentacles
         self.best_values_ratio = np.ones(num_tentacles)
 
@@ -80,12 +80,12 @@ class Octopus:
 
         self.global_best_value = np.inf
         self.global_best_position = None
-        # 调整新位置
+        # Adjust to a new location
         self.center_list = np.zeros((num_tentacles, dim))
         self.radius_list = np.zeros(num_tentacles)
         self.reborn_flag = np.zeros(num_tentacles)
 
-    # 触手的初始化，添加，减少
+    # Initialization, addition, and reduction of tentacles
     def generate_tentacles(self):
         global max_range, min_range
         params_list = []
@@ -117,7 +117,7 @@ class Octopus:
     def remove_tentacles(self, n):
         del self.params_list[n]
 
-    # 根据参数运行，统计结果
+    # Run according to the parameters and calculate the results
     def run_tentacles(self):
         for i, params in enumerate(self.params_list):
             swarm_size, max_iter, c1, c2, w, center, radius = params
@@ -136,14 +136,14 @@ class Octopus:
                 self.best_values[i] = best_value
                 self.best_positions[i] = best_position
 
-            # 更新全局最优解和最优值
+            # Update the global optimal solution and optimal value
             if self.best_values[i] < self.global_best_value:
                 self.global_best_value = self.best_values[i]
                 self.global_best_position = self.best_positions[i]
-            print("第", i, "个触手位置", tentacle.center, "size:", tentacle.swarm_size, "迭代次数", tentacle.max_iter, "找到的值",
-                  self.best_values[i],"最佳位置",self.best_positions[i])
+            print("The", i, "-th tentacle position", tentacle.center, "size:", tentacle.swarm_size, "iterations", tentacle.max_iter, "Found value",
+                  self.best_values[i],"best position",self.best_positions[i])
 
-    # 根据运行结果，群体信息进行调整
+    # Adjust group information based on operational results
     def adjust_tentacles(self, paradise, state):
         global max_range, min_range
         best_value_iteration = min(self.best_values)
@@ -172,8 +172,8 @@ class Octopus:
 
 
             if best_value_iteration != worst_value_iteration:
-                self.best_values_ratio[i] = (self.best_values[i] - worst_value_iteration) / (best_value_iteration - worst_value_iteration)  # 归一化（0,1）
-                self.best_values_ratio[i] = self.best_values_ratio[i] * (maxratio - minratio) + minratio  # 投影到（0.2,1.1）
+                self.best_values_ratio[i] = (self.best_values[i] - worst_value_iteration) / (best_value_iteration - worst_value_iteration)  # normalization（0,1）
+                self.best_values_ratio[i] = self.best_values_ratio[i] * (maxratio - minratio) + minratio  # Projection onto（0.2,1.1）
             swarm_size = np.round(swarm_size * self.best_values_ratio[i]).astype(int)
             max_iter = np.round(max_iter * self.best_values_ratio[i]).astype(int)
             radius = np.round(radius * self.best_values_ratio[i]).astype(int)
@@ -224,27 +224,27 @@ class Octopus:
 
 class OctopusSwarm:
     def __init__(self, num_octopus, num_iteration, cost_func, dim):
-        # 初始化
+        # initialization
         self.num_octopus = num_octopus
         self.num_iteration = num_iteration
         self.cost_func = cost_func
         self.dim = dim
-        # Octopus的实例
+        # Example of Octopus
         self.num_tentacles = np.random.randint(10, 11, self.num_octopus)
         self.octopus_swarm = self.generate_octopus_swarm()
-        # 结果参数
+        # Result parameters
         self.best_value_all = np.inf
         self.best_position_all = None
-        # 强化学习
+        # reinforcement
         self.octopus_statues = np.ones(self.num_octopus)
         self.actions = np.ones(self.num_octopus)
         self.octopus_statues_list = self.generate_octopus_statues_list()
         self.actions_list = self.generate_actions_list()
-        # SARSA 参数
-        self.alpha = 0.1  # 学习率
-        self.gamma = 0.9  # 折扣因子
-        self.epsilon = 0.1  # ε-greedy 探索率
-        #  Q 值表
+        # SARSA parameters
+        self.alpha = 0.1  # Learning rate
+        self.gamma = 0.9  # discount factor
+        self.epsilon = 0.1  # ε - growth exploration rate
+        # Q-value table
         self.q_values_list = self.generate_Q()
 
 
@@ -258,7 +258,7 @@ class OctopusSwarm:
     def add_octopus(self, num_tent):
         self.octopus_swarm.append(Octopus(num_tent, self.cost_func, self.dim))
 
-    # 删除第n个章鱼
+    # Delete the n-th octopus
     def remove_octopus(self, n):
         del self.octopus_swarm[n]
 
@@ -289,16 +289,16 @@ class OctopusSwarm:
 
 
     def choose_action(self, i, state):
-        # ε-greedy 策略选择行动
+        # ε - growth strategy selection action
         if np.random.random() < self.epsilon:
-            return np.random.choice(self.actions_list[i])  # 随机选择行动
+            return np.random.choice(self.actions_list[i])  # Randomly select actions
         else:
-            # 选择具有最大 Q 值的行动
+            # Choose the action with the highest Q value
             max_q_value = max([self.q_values_list[i][(state, a)] for a in self.actions_list[i]])
             return np.random.choice([a for a in self.actions_list[i] if self.q_values_list[i][(state, a)] == max_q_value])
 
     def update_q_value(self, i, state, action, reward, next_state, next_action):
-        # 根据 SARSA 更新公式更新 Q 值
+        # Update Q value according to SARSA update formula
         current_q_value = (self.q_values_list[i])[(state, action)]
         next_q_value = self.q_values_list[i][(next_state, next_action)]
         td_error = -reward + self.gamma * next_q_value - current_q_value
@@ -311,7 +311,7 @@ class OctopusSwarm:
         for j in range(self.num_iteration):
 
             for i in range(self.num_octopus):
-                print("#############################第", i, "只章鱼##############################")
+                print("#############################The", i, "-th octopus##############################")
                 state = self.octopus_statues[i]
                 action = self.actions[i]
 
@@ -332,7 +332,7 @@ class OctopusSwarm:
             for i in range(self.num_octopus):
                 self.octopus_swarm[i].adjust_tentacles(self.best_position_all, self.octopus_statues_list[i])
 
-            print("最佳值：",self.best_value_all,"     最佳位置：",self.best_position_all)
+            print("optimum：",self.best_value_all,"best position：",self.best_position_all)
 
 
 if __name__ == "__main__":
@@ -350,14 +350,14 @@ if __name__ == "__main__":
     num_iteration = 50
     dim = 2
 
-    # 创建章鱼对象
+    # Create Octopus Object
     octopus_swarm = OctopusSwarm(num_octopus, num_iteration, cost_func, dim)
 
-    # 运行优化算法
+    # Run optimization algorithms
     octopus_swarm.run_octopus_swarm()
 
-    # 输出全局最优解和最优值
-    print("章鱼个数:", num_octopus)
-    print("每条章鱼触手个数:", octopus_swarm.num_tentacles)
-    print("全局最优值:", octopus_swarm.best_value_all)
-    print("全局最优位置:", octopus_swarm.best_position_all)
+    # Output global optimal solution and optimal value
+    print("Number of Octopuses:", num_octopus)
+    print("The number of tentacles per octopus:", octopus_swarm.num_tentacles)
+    print("Global optimal value:", octopus_swarm.best_value_all)
+    print("Global optimal position:", octopus_swarm.best_position_all)

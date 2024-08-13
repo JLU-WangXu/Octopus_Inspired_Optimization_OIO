@@ -10,14 +10,14 @@ ImuDataTxt_OCT= open(path1,"w")
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-#计算任意维度欧氏距离
+#Calculate Euclidean distance in any dimension
 
 def euclidean_distance(point1, point2):
     return math.sqrt(sum([(x2 - x1) ** 2 for x1, x2 in zip(point1, point2)]))
 
 Found = 0
 
-#触手
+#tentacle
 class PSO:
     def __init__(self, cost_func, dim, swarm_size=50, max_iter=100, c1=2.0, c2=2.0, w=0.7, center=np.zeros(2), radius=5.0):
         self.cost_func = cost_func
@@ -36,11 +36,11 @@ class PSO:
     def optimize(self):
         global Found,max_range,min_range,real_min_value,diedai_count,controller
         global row,column,fitness_record_array,num_ex,COUNT,Count_i,position_record_arr,particle_count,iter_count
-        global END,num_iteration#判断是不是整个函数最后一次运行
+        global END,num_iteration#Determine if the entire function is running for the last time
 
-        # 初始化粒子位置和速度
+        # Initialize particle position and velocity
         swarm = np.random.uniform(self.bounds[0], self.bounds[1], (self.swarm_size, self.dim))
-        swarm = np.clip(swarm, min_range, max_range)########初始化也要限制
+        swarm = np.clip(swarm, min_range, max_range)########Initialization should also be restricted
 
         velocity = np.random.uniform(min_range*0.001,max_range*0.001,(self.swarm_size, self.dim))
         p_best_pos = swarm.copy()
@@ -55,14 +55,14 @@ class PSO:
                 print("↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓")
             for i in range(self.swarm_size):
 
-                # 更新粒子速度
+                # Update particle velocity
                 r1 = np.random.rand(self.dim)
                 r2 = np.random.rand(self.dim)
                 velocity[i] = self.w * velocity[i] + self.c1 * r1 * (p_best_pos[i] - swarm[i]) + self.c2 * r2 * (self.g_best_pos - swarm[i])
 
-                # 更新粒子位置
+                # Update particle position
                 swarm[i] += velocity[i]
-                # 边界处理
+                # Boundary treatment
                 swarm[i] = np.clip(swarm[i], self.bounds[0], self.bounds[1])
                 swarm[i] = np.clip(swarm[i], min_range, max_range)
 
@@ -74,12 +74,12 @@ class PSO:
                     particle_count+=1
                     END = 1
 
-                # 更新个体最优
+                # Update individual optimal
                 if self.cost_func(swarm[i]) < p_best_val[i]:
                     p_best_val[i] = self.cost_func(swarm[i])
                     p_best_pos[i] = swarm[i].copy()
 
-                    # 更新全局最优
+                    # Update global optimum
                     if p_best_val[i] < self.g_best_val:
                         self.g_best_val = p_best_val[i]
 
@@ -103,16 +103,16 @@ class PSO:
         return self.g_best_pos, self.g_best_val
 
 
-#章鱼
+#octopus
 class PSOControl:
     def __init__(self, num_pso, cost_func, dim):
-        #初始化
+        #initialization
         self.num_pso = num_pso
         self.cost_func = cost_func
         self.dim = dim
-        #PSO参数矩阵，为触手结构的实例
+        #Parameter matrix, an example of tentacle structure
         self.params_list = self.generate_random_params()
-        #结果参数
+        #Result parameters
         self.best_values = [float('inf')] * num_pso
         self.best_values_ratio = np.ones(num_pso)
 
@@ -120,12 +120,12 @@ class PSOControl:
 
         self.global_best_value = np.inf
         self.global_best_position = None
-        #调整新位置
+        #Adjust to a new location
         self.center_list = np.zeros((num_pso, dim))
         self.radius_list = np.zeros(num_pso)
         self.reborn_flag = np.zeros(num_pso)
 
-    #触手的初始化，添加，减少
+    #Initialization, addition, and reduction of tentacles
     def generate_random_params(self):
         global max_range, min_range
         params_list = []
@@ -138,7 +138,7 @@ class PSOControl:
             max_iter = 240 #min = 20,max=400
             c1 =1.8
             c2 =1.8
-            w = 0.6#随范围改；章鱼数量；
+            w = 0.6#Change with scope; Octopus population；
 
             center = np.random.uniform(min_range + i*step, min_range+(i+1)*step, self.dim)#####
             #center = np.random.uniform(min_range, max_range, self.dim)
@@ -162,24 +162,24 @@ class PSOControl:
         del self.params_list[n]
 
 
-    #根据参数运行，统计结果
+    #Run according to the parameters and calculate the results
     def run_pso(self):
         global Found,tentacles,process_end,process_begin,END,tentacle_arr,Count_i,tentacle_count,radius_arr
         for i, params in enumerate(self.params_list):
             tentacles =i
             #print(octopus, tentacles)
             swarm_size, max_iter, c1, c2, w, center, radius = params
-            # 创建一个PSO对象
+            # Create an object
             pso = PSO(self.cost_func, self.dim, swarm_size, max_iter, c1, c2, w, center, radius)
 
-            # 运行PSO优化算法
+            # Run optimization algorithms
             best_position, best_value = pso.optimize()
 
             if self.reborn_flag[i] == 1:
                 self.best_values[i] = best_value
                 self.best_positions[i] = best_position
                 self.reborn_flag[i] = 0
-                # 记录每个PSO的最优解和最优值
+                # Record the optimal solution and optimal value
             elif best_value < self.best_values[i]:
                 self.best_values[i] = best_value
                 self.best_positions[i] = best_position
@@ -187,7 +187,7 @@ class PSOControl:
            # print(i)
             if END == 1:
 
-                print("第", i, "个触手位置", pso.center, "半径", pso.radius,"size",pso.swarm_size)
+                print("The", i, "-th tentacle position", pso.center, "radius", pso.radius,"size",pso.swarm_size)
                 print("↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑")
                 tentacle_arr[i, Count_i,:] = pso.center
                 radius_arr[i,Count_i] = pso.radius
@@ -195,7 +195,7 @@ class PSOControl:
                 #print(radius_arr[i,Count_i])
                   #self.best_values[i])
 
-            # 更新全局最优解和最优值
+            # Update the global optimal solution and optimal value
             if self.best_values[i] < self.global_best_value:
                 self.global_best_value = self.best_values[i]
                 self.global_best_position = self.best_positions[i]
@@ -203,9 +203,9 @@ class PSOControl:
                 print('\n')
                 break
         process_end = time.time()
-        print("本章鱼最优值：",self.global_best_value,"目前耗时：",process_end-process_begin)
+        print("The optimal value of this octopus：",self.global_best_value,"Currently time-consuming：",process_end-process_begin)
 
-    #根据运行结果，群体信息进行调整
+    #Adjust group information based on operational results
     def adjust_pso(self,paradise):
 
         global max_range,min_range,COUNT
@@ -218,8 +218,8 @@ class PSOControl:
         for i, params in enumerate(self.params_list):
 
             if best_value_iteration != worst_value_iteration:
-                self.best_values_ratio[i] = (self.best_values[i] - worst_value_iteration) / ( best_value_iteration - worst_value_iteration)  # 归一化（0,1）
-                self.best_values_ratio[i] = self.best_values_ratio[i] * (1.6 - 0.4) + 0.4  # 投影到（0.2,1.1）
+                self.best_values_ratio[i] = (self.best_values[i] - worst_value_iteration) / ( best_value_iteration - worst_value_iteration)  # normalization（0,1）
+                self.best_values_ratio[i] = self.best_values_ratio[i] * (1.6 - 0.4) + 0.4  # Projection onto（0.2,1.1）
 
 
             swarm_size, max_iter, c1, c2, w, center, radius = params
@@ -233,7 +233,7 @@ class PSOControl:
 
             if swarm_size < 12 or max_iter < 30:
                 self.reborn_flag[i] = 1
-                #print(i,"因为边角料重生了")
+                #print(i,"Because the scraps have been reborn")
 
             elif i>0 :
 
@@ -243,11 +243,9 @@ class PSOControl:
                     distance -= self.radius_list[j]
 
                     if distance < radius:
-                       # print("第",i,j,"重了")
                         if self.best_values[i]>self.best_values[j] and self.reborn_flag[i] ==0 :
                             self.reborn_flag[i] = 1
                             center = np.random.uniform(min_range, max_range, self.dim)
-                           # print(i,"更大","第",i,"个触手变了")
 
 
                         elif self.reborn_flag[j] == 0:
@@ -255,14 +253,12 @@ class PSOControl:
                             temp_swarm_size, temp_max_iter, c1, c2, w, temp_center, temp_radius =self.params_list[j]
                             self.reborn_flag[j] = 1
                             temp_center = np.random.uniform(min_range, max_range, self.dim)
-                           # print(j,"更大","第", j, "个触手变了")
                             for k in range(self.dim):
                                 if np.random.randn() < 0.5:
                                     temp_center[k] = np.random.uniform(min_range,self.global_best_position[k] - total_range * 0.08)
                                 else:
                                     temp_center[k] = np.random.uniform(self.global_best_position[k] + total_range * 0.08,max_range)
                                 self.params_list[j] = (20, 40, c1, c2, w, temp_center, total_range * np.random.uniform(0.06, 0.08))
-                           # print("第",j,"个触手碰撞重生了")
 
             self.radius_list[i] = radius
             self.center_list[i] = center
@@ -281,21 +277,21 @@ class PSOControl:
         #print(self.best_values_ratio)
 
 
-#章鱼群
+#octopus group
 process_begin = time.time()
 process_end = 0
 class Controller:
     def __init__(self, num_control, num_iteration, cost_func, dim):
         global num_tentacles
-        #初始化
+        #initialization
         self.num_control = num_control
         self.num_iteration = num_iteration
         self.cost_func = cost_func
         self.dim = dim
-        #psocontrol的实例
+        #Examples of psocontrol
         self.num_pso = np.random.randint(num_tentacles,num_tentacles+1,self.num_control)
         #self.search_range = search_range
-        #结果参数
+        #Result parameters
         self.best_value_all = np.inf
         self.best_position_all = None
         self.PSOControls = self.generate_psocontrol()
@@ -310,7 +306,7 @@ class Controller:
     def add_psocontrol(self,num_pso):
         self.PSOControls.append(PSOControl(num_pso, self.cost_func, self.dim))
 
-    #删除第n个章鱼
+    #Delete the nth octopus
     def remove_psocontrol(self,n):
         del self.PSOControls[n]
 
@@ -379,8 +375,8 @@ def plot_contour(cost_fun, position_record_arr, max_range, min_range, tentacle_a
         #square = plt.Rectangle((tentacle_arr[i, 0] - radius_arr[i], tentacle_arr[i, 1] - radius_arr[i]),
                              # width=2 * radius_arr[i], height=2 * radius_arr[i], angle=0, color=square_color,
                               # fill=True, alpha=0.7, zorder=1)
-        #square.set_edgecolor('blue')  # 设置边框颜色为黑色
-        #square.set_linewidth(3)  # 设置边框宽度
+        #square.set_edgecolor('blue')  # Set the border color to black
+        #square.set_linewidth(3)  # border-width
         #plt.gca().add_artist(square)
         fill_square = plt.Rectangle((tentacle_arr[i, 0] - radius_arr[i], tentacle_arr[i, 1] - radius_arr[i]),
                                     width=2 * radius_arr[i], height=2 * radius_arr[i], angle=0, color=square_color,
@@ -404,10 +400,10 @@ def plot_contour(cost_fun, position_record_arr, max_range, min_range, tentacle_a
     plt.ylabel('Y')
     plt.title('Contour Plot of ' + cost_fun.__name__)
 
-    # 保存图像为文件
-    save_dir = r"./plot"  # 改为相对路径或确保绝对路径存在
+    # Save image as file
+    save_dir = r"./plot"  # Change to relative path or ensure the existence of absolute path
     if not os.path.exists(save_dir):
-        os.makedirs(save_dir)  # 如果目录不存在，则创建它
+        os.makedirs(save_dir)  # If the directory does not exist, create it
     plt.savefig(os.path.join(save_dir, f"{image_name}_{cost_fun.__name__}.png"))
     print(f"Image saved to {os.path.join(save_dir, f'{image_name}_{cost_fun.__name__}.png')}")
     plt.close()
@@ -511,14 +507,14 @@ if __name__ == "__main__":
         return -np.cos(x[0]) * np.cos(x[1]) * np.exp(-(x[0] - np.pi) ** 2 - (x[1] - np.pi) ** 2)
 
 
-    def Levy_N_13(x):  # 2维
+    def Levy_N_13(x):  # 2-dimensional
         term1 = math.sin(3 * math.pi * x[0]) ** 2
         term2 = (x[0] - 1) ** 2 * (1 + math.sin(3 * math.pi * x[1]) ** 2)
         term3 = (x[1] - 1) ** 2 * (1 + math.sin(2 * math.pi * x[1]) ** 2)
         return term1 + term2 + term3
 
 
-    def sum_of_different_powers(x):  # n维
+    def sum_of_different_powers(x):  # n-dimensional
         temp = 0
         for i in range(len(x)):
             temp += math.fabs(x[i]) ** (i + 1)
@@ -530,10 +526,6 @@ if __name__ == "__main__":
 
 #################################
 
-    #for i in range(num_control):
-        #for j in range(5):#5是触手数
-            #ImuDataTxt_tentacles.write(str("octopus")+str(i)+",")
-    #ImuDataTxt_tentacles.write('\n')
     Found = 0
 
     octopus = 0#
@@ -595,8 +587,8 @@ if __name__ == "__main__":
         Count_i = i
         for j in range(num_ex):
 
-            # 创建PSOControl对象
-            #print("第",j,"次")
+            # Create PSOControl object
+            #print("The",j,"-th time")
             COUNT=j
             Found = 0
             begin_time = time.time()
@@ -606,11 +598,11 @@ if __name__ == "__main__":
 
            # print(str(cost_fun[i]), max_range, min_range, real_min_value)
             controller = Controller(num_control, num_iteration, cost_fun[i], dim)
-            # 运行所有PSO优化算法
+            # Run all PSO optimization algorithms
             controller.run_psocontrol()
             end_time = time.time()
             time_cost = end_time - begin_time
-            print("###################第", i, j, "次", "time:", time_cost, "s","best_value:",controller.best_value_all,"functionName:", str(cost_fun[i]))
+            print("###################The", i, j, "-th time", "time:", time_cost, "s","best_value:",controller.best_value_all,"functionName:", str(cost_fun[i]))
 
             fitness[j, i] = controller.best_value_all-real_min_value
             diedai_count = 0
@@ -649,14 +641,8 @@ if __name__ == "__main__":
     df = pd.DataFrame(fitness_record_array)
     file_path = r'/OAshoulian.csv'
     df.to_csv(file_path, index=False)
-    # 输出全局最优解和最优值
-    #print("章鱼个数:", num_control)
-    #print("每条章鱼触手个数:", controller.num_pso)
-    #print("全局最优值:", controller.best_value_all)
-    #print("全局最优位置:", controller.best_position_all)
 
 
 
-
-#群体迭代5次，4章鱼，一章鱼5触手，一触手50吸盘迭代200次。总共5*200*20 = 20000次，粒子数为4*5*50 = 1000个
+##Group iteration 5 times, 4 octopuses, 1 octopus 5 tentacles, 1 tentacle 50 suction cup iterations 200 times. A total of 5 * 200 * 20=20000 times, with a particle count of 4 * 5 * 50=1000
 #
