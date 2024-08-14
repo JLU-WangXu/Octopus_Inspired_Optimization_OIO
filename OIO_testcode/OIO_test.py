@@ -3,9 +3,9 @@ import numpy as np
 import math
 import time
 from functools import reduce
-path1 = r"/home/wangxu/octopus/lixiang/10d/accuracy_try/output/whole_accuracy.csv"
+path1 = r"/Your_path/whole_accuracy.csv"
 ImuDataTxt_OCT= open(path1,"w")
-path_record = r"/home/wangxu/octopus/lixiang/10d/accuracy_try/output/OAshoulian.csv"
+path_record = r"/Your_path/OAshoulian.csv"
 Record_write = open(path_record,"w")
 
 #Calculate Euclidean distance in any dimension
