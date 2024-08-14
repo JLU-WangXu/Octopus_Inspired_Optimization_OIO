@@ -98,7 +98,7 @@ class Tentacles:
         return self.g_best_pos, self.g_best_val
 
 
-#章鱼
+#octopus
 class TentaclesControl:
     def __init__(self, num_tentacle, cost_func, dim):
         #initialization
@@ -271,7 +271,7 @@ process_end = 0
 class Controller:
     def __init__(self, num_control, num_iteration, cost_func, dim):
         global num_tentacles
-        #初始化
+        #initialization
         self.num_control = num_control
         self.num_iteration = num_iteration
         self.cost_func = cost_func
@@ -586,7 +586,7 @@ if __name__ == "__main__":
             real_min_value = real_min_value_list[i]
 
             controller = Controller(num_control, num_iteration, cost_fun[i], dim)
-            # 运行所有Tentacles优化算法
+            # Run all Tentacles optimization algorithms
             controller.run_tentaclecontrol()
             end_time = time.time()
             time_cost = end_time - begin_time
