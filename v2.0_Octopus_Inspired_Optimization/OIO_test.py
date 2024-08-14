@@ -663,5 +663,5 @@ if __name__ == "__main__":
 
 
 
-#群体迭代50次，1章鱼，一章鱼5触手，一触手50吸盘迭代200次。总共50*200*20 = 20000次，粒子数为4*5*50 = 1000个
+#Group iteration 50 times, 1 octopus, 5 tentacles per octopus, 50 tentacles per tentacle, suction cup iteration 200 times. A total of 50 * 200 * 20=20000 times, with a particle count of 4 * 5 * 50=1000
 #
