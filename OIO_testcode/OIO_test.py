@@ -34,7 +34,7 @@ class Tentacles:
     def optimize(self):
         global Found,max_range,min_range,real_min_value,diedai_count,controller
         swarm = np.random.uniform(self.bounds[0], self.bounds[1], (self.swarm_size, self.dim))
-        swarm = np.clip(swarm, min_range, max_range)########初始化也要限制
+        swarm = np.clip(swarm, min_range, max_range)########Initialization should also be restricted
         velocity = np.random.uniform(min_range*0.001,max_range*0.001,(self.swarm_size, self.dim))
         p_best_pos = swarm.copy()
         p_best_val = np.array([self.cost_func(p) for p in swarm])
